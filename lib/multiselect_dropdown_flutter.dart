@@ -153,15 +153,17 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
     }
   }
 
-  void handleOnChange(bool newValue, dynamic data) {
+  void handleOnChange(bool newValue, dynamic data, dynamic controller) {
     if (newValue) {
       setState(() {
         selected.add(data);
+        controller.close();
       });
     } else {
       if (widget.isSimpleList) {
         setState(() {
           selected.remove(data);
+          controller.close();
         });
       } else {
         int itemIndex = selected.indexWhere(
@@ -180,12 +182,12 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
     widget.onChange(selected);
   }
 
-  Widget buildTile(data) {
+  Widget buildTile(data, controller) {
     if (widget.isSimpleList) {
       return _CustomTile(
         value: isSelected(data),
         onChanged: (bool newValue) {
-          handleOnChange(newValue, data);
+          handleOnChange(newValue, data, controller);
         },
         title: '$data',
         checkboxFillColor: widget.checkboxFillColor,
@@ -421,7 +423,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
               if (widget.includeSearch) buildSearchOption(),
               if (widget.includeSelectAll) buildSelectAllButton(),
               ...filteredOptions.map((data) {
-                return buildTile(data);
+                return buildTile(data, controller);
               }).toList(),
             ],
           ),

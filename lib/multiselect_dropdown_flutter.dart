@@ -1,5 +1,4 @@
 library multiselect_dropdown_flutter;
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,6 +6,16 @@ import 'package:flutter/material.dart';
 const double tileHeight = 50;
 const double selectAllButtonHeight = 40;
 const double searchOptionHeight = 40;
+
+// class Selectdrop {
+//  final int id;
+//  final String? label;
+ 
+// const Selectdrop({
+//       required this.id,
+//       this.label,
+//   });
+// }
 
 class MultiSelectDropdown extends StatefulWidget {
   /// List of options to select from
@@ -95,7 +104,7 @@ class MultiSelectDropdown extends StatefulWidget {
     this.numberOfItemsLabelToShow = 3,
     this.boxDecoration,
     this.width,
-    this.whenEmpty = 'Select options',
+    this.whenEmpty = 'Seleccionar opcion',
     this.isLarge = false,
     this.includeSelectAll = false,
     this.includeSearch = false,
@@ -136,6 +145,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
   late List selected = [...widget.initiallySelected];
   late final Decoration boxDecoration;
   List filteredOptions = [];
+  MenuController _menuController = MenuController();
 
   late final TextEditingController filterController;
   Timer? debounce;
@@ -153,41 +163,43 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
     }
   }
 
-  void handleOnChange(bool newValue, dynamic data, dynamic controller) {
+  void handleOnChange(bool newValue, dynamic data, MenuController controller) {
     if (newValue) {
       setState(() {
+        selected.clear();
         selected.add(data);
         controller.close();
+        //filteredOptions.clear();
       });
     } else {
-      if (widget.isSimpleList) {
-        setState(() {
-          selected.remove(data);
-          controller.close();
-        });
-      } else {
-        int itemIndex = selected.indexWhere(
-          (obj) => obj[widget.id] == data[widget.id],
-        );
-        if (itemIndex == -1) {
-          return;
-        } else {
-          setState(() {
-            selected.removeAt(itemIndex);
-          });
-        }
-      }
+      // if (widget.isSimpleList) {
+      //   setState(() {
+      //     selected.remove(data);
+      //     controller.close();
+      //   });
+      // } else {
+      //   int itemIndex = selected.indexWhere(
+      //     (obj) => obj[widget.id] == data[widget.id],
+      //   );
+      //   if (itemIndex == -1) {
+      //     return;
+      //   } else {
+      //     setState(() {
+      //       selected.removeAt(itemIndex);
+      //     });
+      //   }
+      // }
     }
 
     widget.onChange(selected);
   }
 
-  Widget buildTile(data, controller) {
+  Widget buildTile(data, MenuController menuController) {
     if (widget.isSimpleList) {
       return _CustomTile(
         value: isSelected(data),
         onChanged: (bool newValue) {
-          handleOnChange(newValue, data, controller);
+          handleOnChange(newValue, data, menuController);
         },
         title: '$data',
         checkboxFillColor: widget.checkboxFillColor,
@@ -198,7 +210,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
       return _CustomTile(
         value: isSelected(data[widget.id]),
         onChanged: (bool newValue) {
-          handleOnChange(newValue, data);
+          handleOnChange(newValue, data, menuController);
         },
         title: '${data[widget.label]}',
         checkboxFillColor: widget.checkboxFillColor,
@@ -381,6 +393,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
             width: modalWidth,
           ),
           child: MenuAnchor(
+            controller: _menuController,
             crossAxisUnconstrained: false,
             style: MenuStyle(
               fixedSize: MaterialStateProperty.resolveWith((states) {
@@ -391,12 +404,15 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
               }),
             ),
             builder: (context, controller, _) {
+              _menuController = controller;
               return InkWell(
                 onTap: () {
                   if (controller.isOpen) {
                     controller.close();
+                    print("=======close");
                   } else {
                     controller.open();
+                    print("=======open");
                   }
                 },
                 child: Container(
@@ -423,7 +439,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
               if (widget.includeSearch) buildSearchOption(),
               if (widget.includeSelectAll) buildSelectAllButton(),
               ...filteredOptions.map((data) {
-                return buildTile(data, controller);
+                return buildTile(data, _menuController);
               }).toList(),
             ],
           ),

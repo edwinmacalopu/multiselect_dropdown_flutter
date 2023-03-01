@@ -470,13 +470,13 @@ class _CustomTile extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 6),
-            Checkbox(
-              fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-                return checkboxFillColor ?? themeData.primaryColor;
-              }),
-              value: value,
-              onChanged: null,
-            ),
+            // Checkbox(
+            //   fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            //     return checkboxFillColor ?? themeData.primaryColor;
+            //   }),
+            //   value: value,
+            //   onChanged: null,
+            // ),
             const SizedBox(width: 5),
             Expanded(
               child: Text(

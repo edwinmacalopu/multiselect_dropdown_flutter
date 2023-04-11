@@ -409,10 +409,10 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                 onTap: () {
                   if (controller.isOpen) {
                     controller.close();
-                    print("=======close");
+                   
                   } else {
                     controller.open();
-                    print("=======open");
+                   
                   }
                 },
                 child: Container(
